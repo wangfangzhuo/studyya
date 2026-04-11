@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>考研英语词汇 · 朗读练习</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #f5f5f0;
+      color: #1a1a1a;
+      padding: 20px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      font-size: 22px;
+      font-weight: 700;
+      padding: 20px 0 8px;
+      color: #111;
+    }
+
+    .subtitle {
+      font-size: 13px;
+      color: #888;
+      margin-bottom: 28px;
+    }
+
+    .day-section {
+      margin-bottom: 36px;
+    }
+
+    .day-header {
+      font-size: 13px;
+      font-weight: 600;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    .word-card {
+      background: #fff;
+      border-radius: 10px;
+      padding: 16px 18px;
+      margin-bottom: 10px;
+      border: 1px solid #ebebeb;
+      transition: box-shadow 0.15s;
+    }
+
+    .word-card:hover {
+      box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    }
+
+    .word-top {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+    }
+
+    .word-btn {
+      font-size: 20px;
+      font-weight: 700;
+      color: #1a6ef5;
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 0;
+      font-family: inherit;
+      transition: color 0.15s;
+    }
+
+    .word-btn:hover { color: #0047cc; }
+
+    .word-btn.speaking {
+      color: #e05c00;
+    }
+
+    .phonetic {
+      font-size: 14px;
+      color: #999;
+      font-style: italic;
+    }
+
+    .pos-meaning {
+      font-size: 14px;
+      color: #555;
+    }
+
+    .pos {
+      color: #aaa;
+      font-style: italic;
+      margin-right: 4px;
+    }
+
+    .sentence-block {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid #f0f0f0;
+    }
+
+    .sentence-btn {
+      display: block;
+      width: 100%;
+      text-align: left;
+      background: #f8f8f6;
+      border: 1px solid #e8e8e3;
+      border-radius: 6px;
+      padding: 10px 12px;
+      cursor: pointer;
+      transition: background 0.15s;
+      font-family: inherit;
+      font-size: 13.5px;
+      line-height: 1.55;
+      margin-bottom: 4px;
+      color: #333;
+    }
+
+    .sentence-btn:hover { background: #eeeee8; }
+
+    .sentence-btn.speaking {
+      background: #fff4ec;
+      border-color: #f5c99a;
+    }
+
+    .sentence-btn .en {
+      display: block;
+      font-weight: 500;
+      color: #1a1a1a;
+      margin-bottom: 3px;
+    }
+
+    .sentence-btn .zh {
+      display: block;
+      color: #888;
+      font-size: 12.5px;
+    }
+
+    .speak-hint {
+      font-size: 11px;
+      color: #bbb;
+      margin-top: 4px;
+    }
+
+    .controls {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+
+    .ctrl-label {
+      font-size: 13px;
+      color: #666;
+    }
+
+    select, input[type=range] {
+      font-size: 13px;
+      padding: 5px 8px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      background: #fff;
+      cursor: pointer;
+    }
+
+    input[type=range] {
+      width: 100px;
+      padding: 0;
+      cursor: pointer;
+    }
+
+    .stop-btn {
+      padding: 6px 14px;
+      font-size: 13px;
+      background: #f0f0f0;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      cursor: pointer;
+      font-family: inherit;
+      margin-left: auto;
+    }
+
+    .stop-btn:hover { background: #e4e4e4; }
+
+    .tag {
+      display: inline-block;
+      font-size: 11px;
+      padding: 2px 7px;
+      border-radius: 4px;
+      margin-left: 6px;
+      vertical-align: middle;
+    }
+
+    .tag-new { background: #eaf2ff; color: #2a6de0; }
+    .tag-review { background: #fff4e0; color: #c07000; }
+  </style>
+</head>
+<body>
+
+<h1>考研英语 · 词汇朗读练习</h1>
+<p class="subtitle">点击蓝色单词听发音 · 点击灰色句子框听整句朗读</p>
+
+<div class="controls">
+  <span class="ctrl-label">语速：</span>
+  <input type="range" id="rateSlider" min="0.5" max="1.5" step="0.1" value="0.85"
+    oninput="document.getElementById('rateVal').textContent = this.value">
+  <span id="rateVal" style="font-size:13px;color:#555;width:28px">0.85</span>
+
+  <span class="ctrl-label" style="margin-left:12px">口音：</span>
+  <select id="voiceSelect" onchange="setVoice()"></select>
+
+  <button class="stop-btn" onclick="window.speechSynthesis.cancel()">■ 停止</button>
+</div>
+
+<!-- ============================================================ -->
+<!--  DAY 1  -->
+<!-- ============================================================ -->
+<div class="day-section">
+  <div class="day-header">Day 1 · 2026-04-11 · 考研动机场景</div>
+
+  <div id="words-day1"></div>
+</div>
+
+<!-- ============================================================ -->
+<!--  DAY 2  -->
+<!-- ============================================================ -->
+<div class="day-section">
+  <div class="day-header">Day 2 · 2026-04-12 · 职场面试场景</div>
+
+  <div id="words-day2"></div>
+</div>
+
+
+<script>
+// ── 词汇数据 ────────────────────────────────────────────────────
+const vocab = {
+  "day1": [
+    {
+      word: "significant",
+      phonetic: "/sɪɡˈnɪfɪkənt/",
+      pos: "adj.",
+      meaning: "重要的、显著的",
+      sentences: [
+        { en: "This is a significant opportunity for your career.", zh: "这对你的职业发展来说是一个重要的机会。" },
+        { en: "There has been a significant improvement in her performance.", zh: "她的表现有了显著的进步。" }
+      ]
+    },
+    {
+      word: "opportunity",
+      phonetic: "/ˌɒpəˈtjuːnɪti/",
+      pos: "n.",
+      meaning: "机会",
+      sentences: [
+        { en: "You should seize every opportunity to practice your English.", zh: "你应该抓住每一个练习英语的机会。" },
+        { en: "The internship provided an opportunity to gain real experience.", zh: "这次实习提供了获得实际经验的机会。" }
+      ]
+    },
+    {
+      word: "establish",
+      phonetic: "/ɪˈstæblɪʃ/",
+      pos: "v.",
+      meaning: "建立、确立",
+      sentences: [
+        { en: "It takes time to establish trust in a relationship.", zh: "在一段关系中建立信任需要时间。" },
+        { en: "She established herself as a leading expert in the field.", zh: "她确立了自己在该领域领先专家的地位。" }
+      ]
+    },
+    {
+      word: "confidence",
+      phonetic: "/ˈkɒnfɪdəns/",
+      pos: "n.",
+      meaning: "自信、信心",
+      sentences: [
+        { en: "Regular practice will help you build confidence.", zh: "定期练习将帮助你建立自信。" },
+        { en: "She answered the questions with great confidence.", zh: "她充满自信地回答了问题。" }
+      ]
+    },
+    {
+      word: "achieve",
+      phonetic: "/əˈtʃiːv/",
+      pos: "v.",
+      meaning: "实现、达成",
+      sentences: [
+        { en: "Hard work is necessary to achieve your goals.", zh: "努力工作是实现目标的必要条件。" },
+        { en: "The team achieved excellent results in the competition.", zh: "团队在比赛中取得了优异的成绩。" }
+      ]
+    },
+    {
+      word: "encounter",
+      phonetic: "/ɪnˈkaʊntə(r)/",
+      pos: "v./n.",
+      meaning: "遭遇、碰到",
+      sentences: [
+        { en: "You may encounter difficulties when learning a new language.", zh: "学习新语言时你可能会遇到困难。" },
+        { en: "The researchers encountered unexpected results.", zh: "研究人员遇到了意想不到的结果。" }
+      ]
+    },
+    {
+      word: "challenge",
+      phonetic: "/ˈtʃælɪndʒ/",
+      pos: "n./v.",
+      meaning: "挑战",
+      sentences: [
+        { en: "The entrance exam is a major challenge, but you can do it.", zh: "入学考试是一项重大挑战，但你能做到。" },
+        { en: "She challenged herself to study two hours every day.", zh: "她要求自己每天学习两小时。" }
+      ]
+    },
+    {
+      word: "maintain",
+      phonetic: "/meɪnˈteɪn/",
+      pos: "v.",
+      meaning: "保持、维持",
+      sentences: [
+        { en: "It is important to maintain a consistent study schedule.", zh: "保持稳定的学习计划非常重要。" },
+        { en: "He maintained his focus throughout the long exam.", zh: "他在整个漫长的考试过程中保持了专注。" }
+      ]
+    },
+    {
+      word: "consistent",
+      phonetic: "/kənˈsɪstənt/",
+      pos: "adj.",
+      meaning: "持续的、一致的",
+      sentences: [
+        { en: "Consistent effort over time leads to great results.", zh: "长期持续的努力会带来出色的成果。" },
+        { en: "Her performance has been consistent throughout the year.", zh: "她全年的表现一直很稳定。" }
+      ]
+    },
+    {
+      word: "effort",
+      phonetic: "/ˈefət/",
+      pos: "n.",
+      meaning: "努力",
+      sentences: [
+        { en: "Success requires hard work and consistent effort.", zh: "成功需要努力工作和持续的付出。" },
+        { en: "Despite her efforts, she did not pass the first time.", zh: "尽管她付出了努力，但第一次没有通过。" }
+      ]
+    }
+  ],
+
+  "day2": [
+    {
+      word: "analyze",
+      phonetic: "/ˈænəlaɪz/",
+      pos: "v.",
+      meaning: "分析",
+      sentences: [
+        { en: "We need to analyze the data carefully before drawing conclusions.", zh: "在得出结论之前，我们需要仔细分析数据。" },
+        { en: "The report analyzes the main causes of the problem.", zh: "这份报告分析了问题的主要原因。" }
+      ]
+    },
+    {
+      word: "identify",
+      phonetic: "/aɪˈdentɪfaɪ/",
+      pos: "v.",
+      meaning: "识别、确定",
+      sentences: [
+        { en: "Scientists have identified a new risk factor for the disease.", zh: "科学家们已经确定了这种疾病的一个新风险因素。" },
+        { en: "Can you identify the main argument in this paragraph?", zh: "你能找出这段话中的主要论点吗？" }
+      ]
+    },
+    {
+      word: "implement",
+      phonetic: "/ˈɪmplɪment/",
+      pos: "v.",
+      meaning: "实施、执行",
+      sentences: [
+        { en: "The company plans to implement the new policy next month.", zh: "公司计划下个月实施新政策。" },
+        { en: "It is one thing to plan, but another to implement.", zh: "计划是一回事，执行又是另一回事。" }
+      ]
+    },
+    {
+      word: "coordinate",
+      phonetic: "/kəʊˈɔːdɪneɪt/",
+      pos: "v.",
+      meaning: "协调",
+      sentences: [
+        { en: "She was asked to coordinate the efforts of different departments.", zh: "她被要求协调不同部门的工作。" },
+        { en: "Good managers know how to coordinate a team effectively.", zh: "优秀的管理者知道如何有效协调团队。" }
+      ]
+    },
+    {
+      word: "evaluate",
+      phonetic: "/ɪˈvæljueɪt/",
+      pos: "v.",
+      meaning: "评估",
+      sentences: [
+        { en: "It is important to evaluate the results of any experiment.", zh: "评估任何实验的结果都很重要。" },
+        { en: "The teacher evaluated each student's progress carefully.", zh: "老师仔细评估了每个学生的进步情况。" }
+      ]
+    },
+    {
+      word: "demonstrate",
+      phonetic: "/ˈdemənstreɪt/",
+      pos: "v.",
+      meaning: "展示、证明",
+      sentences: [
+        { en: "The study demonstrates that exercise improves mental health.", zh: "这项研究证明运动能改善心理健康。" },
+        { en: "Please demonstrate how to use this tool.", zh: "请演示如何使用这个工具。" }
+      ]
+    },
+    {
+      word: "relevant",
+      phonetic: "/ˈreləvənt/",
+      pos: "adj.",
+      meaning: "相关的",
+      sentences: [
+        { en: "Please provide only relevant information in your application.", zh: "请在申请中只提供相关信息。" },
+        { en: "Your past experience is highly relevant to this position.", zh: "你的过往经验与这个职位高度相关。" }
+      ]
+    },
+    {
+      word: "emphasize",
+      phonetic: "/ˈemfəsaɪz/",
+      pos: "v.",
+      meaning: "强调",
+      sentences: [
+        { en: "The report emphasizes the need for immediate action.", zh: "这份报告强调了立即采取行动的必要性。" },
+        { en: "I want to emphasize that quality matters more than speed.", zh: "我想强调质量比速度更重要。" }
+      ]
+    },
+    {
+      word: "specific",
+      phonetic: "/spəˈsɪfɪk/",
+      pos: "adj.",
+      meaning: "具体的、特定的",
+      sentences: [
+        { en: "Can you give a more specific example to support your point?", zh: "你能举一个更具体的例子来支持你的观点吗？" },
+        { en: "The instructions were clear and specific.", zh: "这些说明清晰而具体。" }
+      ]
+    },
+    {
+      word: "contribute",
+      phonetic: "/kənˈtrɪbjuːt/",
+      pos: "v.",
+      meaning: "贡献、促成",
+      sentences: [
+        { en: "Many factors contribute to the success of a business.", zh: "许多因素共同促成了企业的成功。" },
+        { en: "Everyone is encouraged to contribute ideas at the meeting.", zh: "鼓励每个人在会议上贡献想法。" }
+      ]
+    }
+  ]
+};
+
+// ── 语音引擎 ────────────────────────────────────────────────────
+let selectedVoice = null;
+
+function loadVoices() {
+  const voices = window.speechSynthesis.getVoices();
+  const sel = document.getElementById('voiceSelect');
+  sel.innerHTML = '';
+  const en = voices.filter(v => v.lang.startsWith('en'));
+  if (en.length === 0) {
+    sel.innerHTML = '<option>（使用系统默认）</option>';
+    return;
+  }
+  en.forEach((v, i) => {
+    const opt = document.createElement('option');
+    opt.value = i;
+    opt.textContent = v.name.replace('()', '').trim();
+    if (v.lang === 'en-US') opt.selected = true;
+    sel.appendChild(opt);
+  });
+  setVoice();
+}
+
+function setVoice() {
+  const voices = window.speechSynthesis.getVoices().filter(v => v.lang.startsWith('en'));
+  const idx = document.getElementById('voiceSelect').value;
+  selectedVoice = voices[idx] || null;
+}
+
+window.speechSynthesis.onvoiceschanged = loadVoices;
+loadVoices();
+
+function speak(text, btn) {
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'en-US';
+  u.rate = parseFloat(document.getElementById('rateSlider').value);
+  if (selectedVoice) u.voice = selectedVoice;
+
+  if (btn) {
+    btn.classList.add('speaking');
+    u.onend = () => btn.classList.remove('speaking');
+    u.onerror = () => btn.classList.remove('speaking');
+  }
+  window.speechSynthesis.speak(u);
+}
+
+// ── 渲染卡片 ────────────────────────────────────────────────────
+function renderWords(containerId, words) {
+  const container = document.getElementById(containerId);
+  words.forEach(item => {
+    const card = document.createElement('div');
+    card.className = 'word-card';
+
+    // 上半部分：单词 + 音标 + 词性词义
+    const top = document.createElement('div');
+    top.className = 'word-top';
+
+    const wordBtn = document.createElement('button');
+    wordBtn.className = 'word-btn';
+    wordBtn.textContent = item.word;
+    wordBtn.title = '点击朗读单词';
+    wordBtn.onclick = () => speak(item.word, wordBtn);
+
+    const ph = document.createElement('span');
+    ph.className = 'phonetic';
+    ph.textContent = item.phonetic;
+
+    const pm = document.createElement('span');
+    pm.className = 'pos-meaning';
+    pm.innerHTML = `<span class="pos">${item.pos}</span>${item.meaning}`;
+
+    top.appendChild(wordBtn);
+    top.appendChild(ph);
+    top.appendChild(pm);
+    card.appendChild(top);
+
+    // 例句
+    const sBlock = document.createElement('div');
+    sBlock.className = 'sentence-block';
+
+    item.sentences.forEach(s => {
+      const btn = document.createElement('button');
+      btn.className = 'sentence-btn';
+      btn.title = '点击朗读整句';
+      btn.innerHTML = `<span class="en">${s.en}</span><span class="zh">${s.zh}</span>`;
+      btn.onclick = () => speak(s.en, btn);
+      sBlock.appendChild(btn);
+    });
+
+    const hint = document.createElement('div');
+    hint.className = 'speak-hint';
+    hint.textContent = '▲ 点击句子框可朗读整句';
+    sBlock.appendChild(hint);
+
+    card.appendChild(sBlock);
+    container.appendChild(card);
+  });
+}
+
+renderWords('words-day1', vocab.day1);
+renderWords('words-day2', vocab.day2);
+</script>
+</body>
+</html>
